@@ -5,6 +5,7 @@ import { DesktopHeader } from '@/components/partials/desktopHeader'
 import { MobileHeader } from '@/components/partials/mobileHeader'
 import axios from 'axios'
 import withAuth from '@/app/authCheck'
+import { ArrowLeft, X } from 'lucide-react';
 
 const baseUrl = 'https://tjc.wizappsystem.com/church/public/api'
 
@@ -69,11 +70,11 @@ function ChurchReport() {
 
   useEffect(() => {
     setFilteredFamilies(
-        familyList.filter((family: any) =>
-            family?.UserFamilyName.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+      familyList.filter((family: any) =>
+        family?.UserFamilyName.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     );
-}, [searchTerm, familyList]);
+  }, [searchTerm, familyList]);
 
   const handleItemClick = async (reportItem: any) => {
     setSelectedReport(reportItem.name)
@@ -145,11 +146,12 @@ function ChurchReport() {
         {showFamiliesView ? (
           <div>
             <div
-              
+
               onClick={handleBack}
             >
-              Back
+              <ArrowLeft className="h-5 w-5" />
             </div>
+
             <h2 className="text-2xl font-bold mb-4">Families</h2>
             <input
               type="text"
@@ -160,7 +162,7 @@ function ChurchReport() {
             />
             {filteredFamilies.length > 0 ? (
               <div className="space-y-4">
-                {filteredFamilies.map((family:any) => (
+                {filteredFamilies.map((family: any) => (
                   <div key={family.UserFamilyName} className="border rounded-lg shadow-md">
                     <button
                       className="flex items-center justify-between p-4 w-full text-left focus:outline-none"
@@ -204,7 +206,7 @@ function ChurchReport() {
             <h2 className="text-2xl font-bold mb-4">Report</h2>
             <div className="bg-white rounded-lg md:shadow overflow-hidden">
               <ul>
-                {reportItems.map((item:any, index) => (
+                {reportItems.map((item: any, index) => (
                   <li key={index}>
                     <a
                       href="#"
@@ -230,28 +232,32 @@ function ChurchReport() {
               </ul>
             </div>
 
+
+
             {/* Modal for displaying report users */}
             {showModal && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div className="bg-white p-6 rounded-lg w-full max-w-lg">
-                  <h3 className="text-xl font-bold mb-4">Users for {selectedReport}</h3>
-                  <ul className="space-y-2">
-                    {userList.length > 0 ? (
-                      userList.map((user:any) => (
-                        <li key={user.id} className="text-gray-700">
-                          {user.Username}
-                        </li>
-                      ))
-                    ) : (
-                      <p>No users found</p>
-                    )}
-                  </ul>
+                <div className="relative bg-white p-6 rounded-lg w-full max-w-lg h-[400px] flex flex-col">
                   <button
-                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+                    className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
                     onClick={() => setShowModal(false)}
                   >
-                    Close
+                    <X className="h-6 w-6" />
                   </button>
+                  <h3 className="text-xl font-bold mb-4">Users for {selectedReport}</h3>
+                  <div className="flex-grow overflow-y-auto">
+                    <ul className="space-y-2">
+                      {userList.length > 0 ? (
+                        userList.map((user: any) => (
+                          <li key={user.id} className="text-gray-700">
+                            {user.Username}
+                          </li>
+                        ))
+                      ) : (
+                        <p>No users found</p>
+                      )}
+                    </ul>
+                  </div>
                 </div>
               </div>
             )}
