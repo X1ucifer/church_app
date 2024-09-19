@@ -256,6 +256,7 @@ function Attendance({ params }: any) {
                                 <div className="w-full px-2 mb-4">
                                     <label htmlFor="UserName" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                                     <input
+                                        required
                                         type="text"
                                         id="UserName"
                                         name="UserName"
@@ -269,6 +270,7 @@ function Attendance({ params }: any) {
                                 <div className="w-1/2 px-2 mb-4">
                                     <label htmlFor="UserFamilyName" className="block text-sm font-medium text-gray-700 mb-1">Family Name</label>
                                     <input
+                                        required
                                         type="text"
                                         id="UserFamilyName"
                                         name="UserFamilyName"
@@ -312,6 +314,7 @@ function Attendance({ params }: any) {
                                 <div className="w-1/2 px-2 mb-4">
                                     <label htmlFor="UserDOB" className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                                     <input
+                                        required
                                         type="date"
                                         id="UserDOB"
                                         name="UserDOB"
@@ -325,6 +328,7 @@ function Attendance({ params }: any) {
                                 <div className="w-1/2 px-2 mb-4">
                                     <label htmlFor="UserPhone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                                     <input
+                                        required
                                         type="text"
                                         id="UserPhone"
                                         name="UserPhone"
@@ -339,6 +343,7 @@ function Attendance({ params }: any) {
                                     <label htmlFor="UserChurchName" className="block text-sm font-medium text-gray-700 mb-1">Church Name</label>
                                     <input
                                         type="text"
+                                        required
                                         id="UserChurchName"
                                         name="UserChurchName"
                                         value={formData.UserChurchName}
@@ -354,6 +359,7 @@ function Attendance({ params }: any) {
                                     <input
                                         type="email"
                                         id="UserEmail"
+                                        required
                                         name="UserEmail"
                                         value={formData.UserEmail}
                                         onChange={handleChange}
@@ -367,6 +373,7 @@ function Attendance({ params }: any) {
                                     <input
                                         type="text"
                                         id="UserAddress"
+                                        required
                                         name="UserAddress"
                                         value={formData.UserAddress}
                                         onChange={handleChange}
