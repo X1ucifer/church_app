@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Calendar, User, ChevronRight, LogOut, Settings, Users, UserPlus, MapPin } from 'lucide-react'
 import { DesktopHeader } from '@/components/partials/desktopHeader'
 import { MobileHeader } from '@/components/partials/mobileHeader'
@@ -9,9 +9,10 @@ import { useRouter } from 'next/navigation'
 import withAuth from '@/app/authCheck'
 
 
-const userData = typeof window !== 'undefined' ?  localStorage.getItem('user') || '' : '';
-const parsedData =  userData ? JSON.parse(userData) : null;
+const userData = typeof window !== 'undefined' ? localStorage.getItem('user') || '' : '';
+const parsedData = userData ? JSON.parse(userData) : null;
 const userId = parsedData?.user.id;
+const userType = parsedData?.user.UserType;
 
 const accountItems = [
     { name: 'Profile', icon: User, route: `/dashboard/account/profile/${userId}` },
@@ -19,17 +20,17 @@ const accountItems = [
     { name: 'Members Data', icon: Users, route: '/dashboard/account/members' },
     { name: 'Out Station Members Data', icon: MapPin, route: '/dashboard/account/station-member' },
     { name: 'Friends Data', icon: UserPlus, route: '/dashboard/account/friend' },
-    { name: 'Settings', icon: Settings, route: '/dashboard/account/settings' },
+    { name: 'Settings', icon: Settings, route: '/dashboard/account/settings' }
 ]
 
 function AccountSettings() {
     const [activeTab, setActiveTab] = useState('Account')
     const router = useRouter()
 
-    const logout = ()=>{
-     localStorage.removeItem('token')
-     localStorage.removeItem('user')
-     router.push('/')
+    const logout = () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        router.push('/')
     }
 
     return (
@@ -44,17 +45,21 @@ function AccountSettings() {
                 <div className='flex flex-col h-[81vh] justify-between md:h-unset md:justify-normal'>
                     <div className="bg-white rounded-lg md:shadow overflow-hidden">
                         <ul>
-                            {accountItems.map((item, index) => (
-                                <li key={index} className={index !== 0 ? 'border-t border-gray-200' : ''}>
-                                    <Link href={item.route} passHref className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors duration-150">
-                                        <div className="flex items-center">
-                                            <item.icon className="h-5 w-5 text-gray-400 mr-3" />
-                                            <span className="text-gray-700 text-[15px]">{item.name}</span>
-                                        </div>
-                                        <ChevronRight className="h-5 w-5 text-gray-400" />
-                                    </Link>
-                                </li>
-                            ))}
+                            {accountItems
+                                .filter(item => userType == "Admin" || item.name !== "Settings")
+                                .map((item, index) => (
+                                    <li key={index} className={index !== 0 ? 'border-t border-gray-200' : ''}>
+                                        <Link href={item.route} passHref className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors duration-150">
+                                            <div className="flex items-center">
+                                                <item.icon className="h-5 w-5 text-gray-400 mr-3" />
+                                                <span className="text-gray-700 text-[15px]">{item.name}</span>
+                                            </div>
+                                            <ChevronRight className="h-5 w-5 text-gray-400" />
+                                        </Link>
+                                    </li>
+                                ))
+                            }
+
                         </ul>
                     </div>
 

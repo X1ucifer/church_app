@@ -44,6 +44,11 @@ export default function Register() {
         }
     }
 
+    const userData = typeof window !== 'undefined' ? localStorage.getItem('user') || '' : '';
+    const parsedData = userData ? JSON.parse(userData) : null;
+    const userType = parsedData?.user.UserType;
+
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const completeData = { ...formData, profileImage };
@@ -69,7 +74,7 @@ export default function Register() {
                     });
                     setProfileImage(null);
                     fileInputRef.current && (fileInputRef.current.value = '');
-                    
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Registration Successful',
@@ -256,8 +261,12 @@ export default function Register() {
                                 required
                             >
                                 <option value="">Select</option>
-                                <option value="Pastor">Pastor</option>
-                                <option value="Exco">Exco</option>
+                                {userType == "Admin" && (
+                                    <>
+                                    <option value="Pastor">Pastor</option>
+                                    <option value="Exco">Exco</option>
+                                    </>                                
+                                )}
                                 <option value="Member">Member</option>
                             </select>
                         </div>
