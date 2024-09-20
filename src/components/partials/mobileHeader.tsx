@@ -3,6 +3,7 @@ import { Home, FileText, Calendar, User } from 'lucide-react'
 import Link from 'next/link';
 import { updateRights, getRights } from '@/utils/api';
 import { useRouter } from 'next/navigation';
+import Skeleton from 'react-loading-skeleton';
 
 export interface IAppProps {
     activeTab: string;
@@ -48,65 +49,83 @@ export function MobileHeader({ activeTab, setActiveTab }: IAppProps) {
     }, [router]);
 
 
+    const skeletonRows = Array(4).fill(null);
+
     // If accessRights is null, you can render a loader or nothing
-    if (!accessRights) return null;
+    // if (!accessRights) return null;
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden">
             <ul className="flex justify-around p-2">
-                {accessRights.dashboard === '1' && (
-                    <li>
-                        <Link href="/dashboard" passHref>
-                            <button
-                                className={`flex flex-col items-center ${activeTab === 'Home' ? 'text-blue-600' : 'text-gray-600'}`}
-                                onClick={() => setActiveTab('Home')}
-                            >
-                                <Home className="h-6 w-6" />
-                                <span className="text-xs">Home</span>
-                            </button>
-                        </Link>
-                    </li>
-                )}
-                {accessRights.report === '1' && (
-                    <li>
-                        <Link href="/dashboard/reports" passHref>
-                            <button
-                                className={`flex flex-col items-center ${activeTab === 'Report' ? 'text-blue-600' : 'text-gray-600'}`}
-                                onClick={() => setActiveTab('Report')}
-                            >
-                                <FileText className="h-6 w-6" />
-                                <span className="text-xs">Report</span>
-                            </button>
-                        </Link>
-                    </li>
-                )}
-                {accessRights.events === '1' && (
-                    <li>
-                        <Link href="/dashboard/events" passHref>
-                            <button
-                                className={`flex flex-col items-center ${activeTab === 'Events' ? 'text-blue-600' : 'text-gray-600'}`}
-                                onClick={() => setActiveTab('Events')}
-                            >
-                                <Calendar className="h-6 w-6" />
-                                <span className="text-xs">Events</span>
-                            </button>
-                        </Link>
-                    </li>
-                )}
-                {accessRights.settings === '1' && (
-                    <li>
-                        <Link href="/dashboard/account" passHref>
-                            <button
-                                className={`flex flex-col items-center ${activeTab === 'Account' ? 'text-blue-600' : 'text-gray-600'}`}
-                                onClick={() => setActiveTab('Account')}
-                            >
-                                <User className="h-6 w-6" />
-                                <span className="text-xs">Account</span>
-                            </button>
-                        </Link>
-                    </li>
+                {/* Render skeleton if accessRights is not yet loaded */}
+                {!accessRights ? (
+                    skeletonRows.map((_, index) => (
+                        <li key={index}>
+                            <div className="flex flex-col items-center">
+                                <Skeleton circle height={24} width={24} />
+                                <Skeleton width={40} height={10} className="mt-2" />
+                            </div>
+                        </li>
+                    ))
+                ) : (
+                    <>
+                        {accessRights.dashboard === '1' && (
+                            <li>
+                                <Link href="/dashboard" passHref>
+                                    <button
+                                        className={`flex flex-col items-center ${activeTab === 'Home' ? 'text-blue-600' : 'text-gray-600'}`}
+                                        onClick={() => setActiveTab('Home')}
+                                    >
+                                        <Home className="h-6 w-6" />
+                                        <span className="text-xs">Home</span>
+                                    </button>
+                                </Link>
+                            </li>
+                        )}
+                        {accessRights.report === '1' && (
+                            <li>
+                                <Link href="/dashboard/reports" passHref>
+                                    <button
+                                        className={`flex flex-col items-center ${activeTab === 'Report' ? 'text-blue-600' : 'text-gray-600'}`}
+                                        onClick={() => setActiveTab('Report')}
+                                    >
+                                        <FileText className="h-6 w-6" />
+                                        <span className="text-xs">Report</span>
+                                    </button>
+                                </Link>
+                            </li>
+                        )}
+                        {accessRights.events === '1' && (
+                            <li>
+                                <Link href="/dashboard/events" passHref>
+                                    <button
+                                        className={`flex flex-col items-center ${activeTab === 'Events' ? 'text-blue-600' : 'text-gray-600'}`}
+                                        onClick={() => setActiveTab('Events')}
+                                    >
+                                        <Calendar className="h-6 w-6" />
+                                        <span className="text-xs">Events</span>
+                                    </button>
+                                </Link>
+                            </li>
+                        )}
+                        {accessRights.settings === '1' && (
+                            <li>
+                                <Link href="/dashboard/account" passHref>
+                                    <button
+                                        className={`flex flex-col items-center ${activeTab === 'Account' ? 'text-blue-600' : 'text-gray-600'}`}
+                                        onClick={() => setActiveTab('Account')}
+                                    >
+                                        <User className="h-6 w-6" />
+                                        <span className="text-xs">Account</span>
+                                    </button>
+                                </Link>
+                            </li>
+                        )}
+                    </>
                 )}
             </ul>
         </nav>
     );
 }
+
+

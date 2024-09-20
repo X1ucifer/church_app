@@ -63,12 +63,7 @@ export default function UpdateMember({ params }: any) {
         try {
             await editMember({ token, id, data: formData }, {
                 onSuccess() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Member Updated',
-                        text: 'Member details have been updated successfully!',
-                        confirmButtonText: 'OK',
-                    });
+                    router.push(`/dashboard/account/profile/${id}`)
                 }
             });
 

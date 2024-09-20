@@ -341,13 +341,12 @@ export const deleteEvent = async (token: string, id: number) => {
 
 export const filterMembers = async (token: string, filter_type: string, id?:any) => {
     try {
-        const response = await api.get(`/user/filterByType`, {
+        const response = await api.get(`/user/filterByType/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
             params: {
                 filter_type: filter_type,
-                id,
             },
         });
         console.log("API Response:", response.data);

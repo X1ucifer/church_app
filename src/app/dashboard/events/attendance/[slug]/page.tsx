@@ -52,6 +52,7 @@ function Attendance({ params }: any) {
         UserChurchName: '',
     });
 
+
     const router = useRouter();
 
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
@@ -75,11 +76,11 @@ function Attendance({ params }: any) {
 
     const handleAttendanceChange = (id: number) => {
         setSelectedMembers((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((memberId) => memberId !== id)
-                : [...prevSelected, id]
+          prevSelected.includes(id)
+            ? prevSelected.filter((memberId) => memberId !== id) 
+            : [...prevSelected, id] 
         );
-    };
+      };
 
     const handleSubmitAttendance = async () => {
         try {
@@ -225,7 +226,7 @@ function Attendance({ params }: any) {
                                     <td className="py-2">
                                         <input
                                             type="checkbox"
-                                            checked={selectedMembers.includes(member.id)}
+                                            checked={member.isMarked === "1" || selectedMembers.includes(member.id)}
                                             onChange={() => handleAttendanceChange(member.id)}
                                             className="h-5 w-5 text-blue-600 rounded"
                                         />

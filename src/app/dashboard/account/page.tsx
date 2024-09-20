@@ -12,7 +12,6 @@ import withAuth from '@/app/authCheck'
 const userData = typeof window !== 'undefined' ? localStorage.getItem('user') || '' : '';
 const parsedData = userData ? JSON.parse(userData) : null;
 const userId = parsedData?.user.id;
-const userType = parsedData?.user.UserType;
 
 const accountItems = [
     { name: 'Profile', icon: User, route: `/dashboard/account/profile/${userId}` },
@@ -25,7 +24,17 @@ const accountItems = [
 
 function AccountSettings() {
     const [activeTab, setActiveTab] = useState('Account')
+    const [userType, setUserType] = useState('')
+
     const router = useRouter()
+
+    useEffect(() => {
+        const userData = typeof window !== 'undefined' ? localStorage.getItem('user') || '' : '';
+        const parsedData = userData ? JSON.parse(userData) : null;
+        const userId = parsedData?.user.id;
+        const userType = parsedData?.user.UserType;
+        setUserType(userType)
+    }, [])
 
     const logout = () => {
         localStorage.removeItem('token')

@@ -4,10 +4,9 @@ import React, { useState } from 'react'
 import { X, ChevronDown, Clock, Calendar } from 'lucide-react'
 import { useAddEvent } from '@/hooks/useEvents'
 import { useChurches } from '@/hooks/useRegister';
-import TimePicker from 'rc-time-picker';
-import moment from 'moment';
-import { format, parseISO } from 'date-fns';
-
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
 const generateTimeOptions: any = () => {
     const options: any = [];
@@ -24,6 +23,17 @@ const generateTimeOptions: any = () => {
     return options;
 };
 
+const eventSchema = z.object({
+    eventName: z.string().min(1, 'Event name is required').max(50, 'Event name must be less than 50 characters'),
+    eventType: z.string().min(1, 'Event type is required'),
+    leader: z
+        .string()
+        .min(1, 'Leader is required')
+        .regex(/^[a-zA-Z\s]*$/, 'Leader name can only contain letters and spaces'),
+    time: z.string().min(1, 'Time is required'),
+    date: z.string().min(1, 'Date is required'),
+    pastoralChurch: z.string().min(1, 'Pastoral Church is required'),
+})
 
 export default function NewEvent({ onClose }: any) {
     const [eventName, setEventName] = useState('')
@@ -47,23 +57,28 @@ export default function NewEvent({ onClose }: any) {
     const { mutate: addEvent, isLoading, error } = useAddEvent(token);
     const { data: churches, isLoading: isChurchLoading, isError: isChurchError } = useChurches();
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+    } = useForm({
+        resolver: zodResolver(eventSchema),
+    });
 
-
-        addEvent({
-            eventName,
-            eventType,
-            leader,
-            time,
-            date,
-            churchID: pastoralChurch,
-        }, {
-            onSuccess: (data) => {
-                onClose();
+    const onSubmit = (data: any) => {
+        addEvent(
+            {
+                ...data,
+                churchID: data.pastoralChurch,
+            },
+            {
+                onSuccess: () => {
+                    onClose();
+                },
             }
-        });
-    }
+        );
+    };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg shadow-lg">
@@ -75,7 +90,7 @@ export default function NewEvent({ onClose }: any) {
                         <X className="h-6 w-6" />
                     </button>
                 </div>
-                <form onSubmit={handleSubmit} className="p-4 space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
                     <div>
                         <label htmlFor="eventName" className="block text-sm font-medium text-gray-700 mb-1">
                             Event Name
@@ -83,11 +98,13 @@ export default function NewEvent({ onClose }: any) {
                         <input
                             type="text"
                             id="eventName"
-                            value={eventName}
-                            onChange={(e) => setEventName(e.target.value)}
+                            {...register('eventName')}
                             className="w-full p-2 border rounded-md"
                             placeholder="Prayer Meeting"
                         />
+                        {errors.eventName && typeof errors.eventName.message === 'string' && (
+                            <p className="text-red-500 text-sm">{errors?.eventName.message}</p>
+                        )}
                     </div>
                     <div>
                         <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-1">
@@ -96,8 +113,7 @@ export default function NewEvent({ onClose }: any) {
                         <div className="relative">
                             <select
                                 id="eventType"
-                                value={eventType}
-                                onChange={(e) => setEventType(e.target.value)}
+                                {...register('eventType')}
                                 className="w-full p-2 border rounded-md appearance-none"
                             >
                                 <option value="">Select event type</option>
@@ -111,6 +127,9 @@ export default function NewEvent({ onClose }: any) {
                             </select>
                             <ChevronDown className="absolute right-2 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
                         </div>
+                        {errors.eventType && typeof errors.eventType.message === 'string' && (
+                            <p className="text-red-500 text-sm">{errors.eventType.message}</p>
+                        )}
                     </div>
                     <div>
                         <label htmlFor="leader" className="block text-sm font-medium text-gray-700 mb-1">
@@ -119,45 +138,40 @@ export default function NewEvent({ onClose }: any) {
                         <input
                             type="text"
                             id="leader"
-                            value={leader}
-                            onChange={(e) => setLeader(e.target.value)}
+                            {...register('leader')}
                             className="w-full p-2 border rounded-md"
                             placeholder="Fedrick"
                         />
+                        {errors.leader && typeof errors.leader.message === 'string' && (
+                            <p className="text-red-500 text-sm">{errors.leader.message}</p>
+                        )}
                     </div>
+
                     <div className="flex space-x-4">
                         <div className="flex-1">
                             <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
                                 Time
                             </label>
                             <div className="relative">
-
-                                <div className="relative">
-                                    <div className="relative">
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsOpen(!isOpen)}
-                                            className="w-full p-2 border rounded-md text-left"
-                                        >
-                                            {time || 'Select time'}
-                                        </button>
-                                        {isOpen && (
-                                            <ul className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                                {timeOptions.map((option: any) => (
-                                                    <li
-                                                        key={option}
-                                                        onClick={() => handleTimeSelect(option)}
-                                                        className="p-2 cursor-pointer hover:bg-gray-100"
-                                                    >
-                                                        {option}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </div>
-                                </div>
+                                <select
+                                    id="time"
+                                    {...register('time')}
+                                    value={time}
+                                    onChange={(e) => setTime(e.target.value)}
+                                    className="w-full p-2 border rounded-md appearance-none"
+                                >
+                                    {generateTimeOptions().map((option: string) => (
+                                        <option key={option} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.time && typeof errors.time.message === 'string' && (
+                                    <p className="text-red-500 text-sm">{errors.time.message}</p>
+                                )}
                             </div>
                         </div>
+
                         <div className="flex-1">
                             <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
                                 Date
@@ -166,41 +180,41 @@ export default function NewEvent({ onClose }: any) {
                                 <input
                                     type="date"
                                     id="date"
-                                    value={date}
-                                    onChange={(e) => setDate(e.target.value)}
+                                    {...register('date')}
                                     className="w-full p-2 border rounded-md pl-8"
                                 />
                                 <Calendar className="absolute left-2 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
                             </div>
+                            {errors.date && typeof errors.date.message === 'string' && (
+                                <p className="text-red-500 text-sm">{errors.date.message}</p>
+                            )}
                         </div>
                     </div>
                     <div>
                         <label htmlFor="pastoralChurch" className="block text-sm font-medium text-gray-700 mb-1">
                             Pastoral Church Name
                         </label>
-                        <div className="relative">
-                            <select
-                                id="pastoralChurch"
-                                value={pastoralChurch}
-                                onChange={(e) => setPastoralChurch(e.target.value)}
-                                className="w-full p-2 border rounded-md appearance-none"
-                            >
-                                <option value="">Select</option>
-
-                                {isChurchLoading ? (
-                                    <option value="">Loading...</option>
-                                ) : isChurchError ? (
-                                    <option value="">Error loading churches</option>
-                                ) : (
-                                    churches?.map((church: any) => (
-                                        <option key={church.id} value={church.id}>
-                                            {church.ChurchName}
-                                        </option>
-                                    ))
-                                )}
-                            </select>
-                            <ChevronDown className="absolute right-2 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
-                        </div>
+                        <select
+                            id="pastoralChurch"
+                            {...register('pastoralChurch', { required: 'Please select a church' })} // Ensure registration
+                            className="w-full p-2 border rounded-md appearance-none"
+                        >
+                            <option value="">Select</option>
+                            {isChurchLoading ? (
+                                <option value="">Loading...</option>
+                            ) : isChurchError ? (
+                                <option value="">Error loading churches</option>
+                            ) : (
+                                churches?.map((church: any) => (
+                                    <option key={church.id} value={church.id}>
+                                        {church.ChurchName}
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                        {errors.pastoralChurch && typeof errors.pastoralChurch.message === 'string' && (
+                            <p className="text-red-500 text-sm mt-1">{errors.pastoralChurch.message}</p>
+                        )}
                     </div>
                     <button
                         type="submit"
