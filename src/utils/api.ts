@@ -341,7 +341,8 @@ export const deleteEvent = async (token: string, id: number) => {
 
 export const filterMembers = async (token: string, filter_type: string, id?:any) => {
     try {
-        const response = await api.get(`/user/filterByType/${id}`, {
+        const url = id ? `/user/filterByType/${id}` : `/user/filterByType`;
+        const response = await api.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

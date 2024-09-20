@@ -94,9 +94,7 @@ function UserProfile( { params }: any) {
                     >
                         <ArrowLeft className="h-6 w-6 text-blue-400" />
                     </button>
-                    <button className="text-gray-600 hover:text-gray-900">
-                        <MoreVertical className="h-6 w-6" />
-                    </button>
+                    
                 </div>
 
                 {/* Profile Content */}

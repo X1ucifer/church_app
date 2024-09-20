@@ -205,7 +205,7 @@ function ChurchReport() {
           <>
             <h2 className="text-2xl font-bold mb-4">Report</h2>
             <div className="bg-white rounded-lg md:shadow overflow-hidden">
-              <ul>
+              <ul className='h-[100vh]'>
                 {reportItems.map((item: any, index) => (
                   <li key={index}>
                     <a

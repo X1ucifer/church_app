@@ -267,8 +267,8 @@ export default function Register() {
                                     <option value="Widowed">Widowed</option>
                                 </select>
 
-                                {errors.UserGender && typeof errors.UserGender.message === 'string' && (
-                                    <p className="text-red-500 text-sm">{errors?.UserGender.message}</p>
+                                {errors.UserMaritalStatus && typeof errors.UserMaritalStatus.message === 'string' && (
+                                    <p className="text-red-500 text-sm">{errors?.UserMaritalStatus.message}</p>
                                 )}
                             </div>
 
